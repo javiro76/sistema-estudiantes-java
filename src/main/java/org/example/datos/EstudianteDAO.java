@@ -82,16 +82,55 @@ public class EstudianteDAO {
 
     }
 
+    public boolean agregarEstudiante(Estudiante estudiante){
+        PreparedStatement ps;
+        ResultSet rs;
+        Connection con = getConexion();
+        String sql = "INSERT INTO estudiante(nombre, apellido, telefono, email) VALUES(?,?,?,?)";
+        try{
+            ps = con.prepareStatement(sql);
+            ps.setString(1, estudiante.getNombre());
+            ps.setString(2, estudiante.getApellido());
+            ps.setString(3, estudiante.getTelefono());
+            ps.setString(4, estudiante.getEmail());
+            ps.execute();
+            return true;
+
+        }catch (Exception e){
+            System.out.println("Error al agregar al estudiante: " + e.getMessage());
+        }
+        finally {
+            try {
+                con.close();
+            }catch (Exception e){
+                System.out.println("Ocurrio un error al cerrar conexion: " + e.getMessage());
+            }
+        }
+        return false;
+    }
+
+
 
 
     public static void main(String[] args) {
         var estudianteDAO = new EstudianteDAO();
-        //Listar los Estudiantes
+
+        //---------------Agregar nuevo estudiante------------------------
+        var nuevoEstudiante = new Estudiante("federico","ramirez","34568889","fede@gmail.com");
+        var agregado = estudianteDAO.agregarEstudiante(nuevoEstudiante);
+        if(agregado){
+            System.out.println("Estudiante agregado: " + nuevoEstudiante);
+        }else {
+            System.out.println("No se agrego el estudiante: " + nuevoEstudiante);
+        }
+
+
+        //-----------------Listar los Estudiantes-------------------------
         System.out.println("Listado Estudiantes: ");
         List<Estudiante> estudiantes = estudianteDAO.ListarEstudiantes();
         estudiantes.forEach(System.out::println);
 
-        //Buscar por id
+        //----------------------Buscar por id----------------------------
         var estudiante1 = new Estudiante(2);
         System.out.println("Estudiante antes de busqueda: " + estudiante1);
         var encontrado = estudianteDAO.buscarEstudiantePorId(estudiante1);
